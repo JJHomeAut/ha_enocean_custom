@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from typing import Any
+import time  # Add this import at the top
 
 from .enocean_library.utils import combine_hex
 import voluptuous as vol
@@ -50,13 +51,13 @@ def _migrate_to_new_unique_id(hass: HomeAssistant, sender_id, channel) -> None:
             ent_reg.async_update_entity(entity_id, new_unique_id=new_unique_id)
         except ValueError:
             LOGGER.warning(
-                "Skip migration of id [%s] to [%s] because it already exists",
+                "switch.py: Skip migration of id [%s] to [%s] because it already exists",
                 old_unique_id,
                 new_unique_id,
             )
         else:
             LOGGER.debug(
-                "Migrating unique_id from [%s] to [%s]",
+                "switch.py: Migrating unique_id from [%s] to [%s]",
                 old_unique_id,
                 new_unique_id,
             )
@@ -93,6 +94,15 @@ class EnOceanSwitch(EnOceanEntity, SwitchEntity):
         self.sender_id = sender_id
         self._attr_unique_id = generate_unique_id(sender_id, channel)
 
+        LOGGER.debug(
+                "switch.py: Initialized EnOceanSwitch with dev_id [%s], dev_name [%s], channel [%s], switch_type [%s], sender_id [%s]",
+                self.dev_id,
+                self.dev_name,
+                self.channel,
+                self.switch_type,
+                self.sender_id
+            )
+
     @property
     def is_on(self):
         """Return whether the switch is on or off."""
@@ -116,16 +126,18 @@ class EnOceanSwitch(EnOceanEntity, SwitchEntity):
             command = [0xF6, val_pushed]
             command.extend(self.sender_id)
             command.extend([0x30])
-            self.send_command(command, [], 0x01)
-            #optional = [0x0, 0xFF, 0xFF, 0xFF, 0xFF, 0x4D, 0x0]  # physischer Schalter
-            #self.send_command(command, optional, 0x01)
+            #self.send_command(command, [], 0x01)
+            optional = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x47, 0x00]
+            self.send_command(command, optional, 0x01)
+            
+            time.sleep(0.05)  # 50ms delay
             
             command = [0xF6, 0x00]
             command.extend(self.sender_id)
             command.extend([0x20])
-            self.send_command(command, [], 0x01)
-            #optional = [0x0, 0xFF, 0xFF, 0xFF, 0xFF, 0x4D, 0x0]  # physischer Schalter
-            #self.send_command(command, optional, 0x01)
+            #self.send_command(command, [], 0x01)
+            optional = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x4A, 0x00]
+            self.send_command(command, optional, 0x01)
             
             self._on_state = True
         else:
@@ -152,16 +164,18 @@ class EnOceanSwitch(EnOceanEntity, SwitchEntity):
             command = [0xF6, val_pushed]
             command.extend(self.sender_id)
             command.extend([0x30])
-            self.send_command(command, [], 0x01)
-            #optional = [0x0, 0xFF, 0xFF, 0xFF, 0xFF, 0x4D, 0x0]  # physischer Schalter
-            #self.send_command(command, optional, 0x01)
+            #self.send_command(command, [], 0x01)
+            optional = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x47, 0x00]
+            self.send_command(command, optional, 0x01)
+            
+            time.sleep(0.05)  # 50ms delay
             
             command = [0xF6, 0x00]
             command.extend(self.sender_id)
             command.extend([0x20])
-            self.send_command(command, [], 0x01)
-            #optional = [0x0, 0xFF, 0xFF, 0xFF, 0xFF, 0x4D, 0x0]  # physischer Schalter
-            #self.send_command(command, optional, 0x01)
+            #self.send_command(command, [], 0x01)
+            optional = [0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0x4A, 0x00]
+            self.send_command(command, optional, 0x01)
             
             self._on_state = False
         else:
