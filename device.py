@@ -38,4 +38,7 @@ class EnOceanEntity(Entity):
         """Send a command via the EnOcean dongle."""
 
         packet = Packet(packet_type, data=data, optional=optional)
+        LOGGER.debug("device.py: Sending command, self.hass: %s", self.hass)
+        LOGGER.debug("device.py: Sending command, SIGNAL_SEND_MESSAGE: %s", SIGNAL_SEND_MESSAGE)
+        LOGGER.debug("device.py: Sending command, packet: %s",packet)
         dispatcher_send(self.hass, SIGNAL_SEND_MESSAGE, packet)

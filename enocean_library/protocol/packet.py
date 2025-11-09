@@ -114,7 +114,8 @@ class Packet(object):
         if 0x55 not in buf:
             return PARSE_RESULT.INCOMPLETE, [], None
 
-        Packet.logger.debug("parse_msg called with buf=%s", buf)
+        Packet.logger.debug("parse_msg called with buf[%s]", 
+                     ", ".join([f"0x{b:02X}" for b in buf]))
 
         # Valid buffer starts from 0x55
         # Convert to list, as index -method isn't defined for bytearray

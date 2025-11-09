@@ -6,7 +6,6 @@ import time
 
 from .communicator import Communicator
 
-
 class SerialCommunicator(Communicator):
     ''' Serial port communicator class for EnOcean radio '''
     logger = logging.getLogger(__name__)
@@ -26,7 +25,10 @@ class SerialCommunicator(Communicator):
                 if not packet:
                     break
                 try:
-                    self.__ser.write(bytearray(packet.build()))
+                    packet_bytes = packet.build()
+                    self.logger.debug("serialcommunicator.py: Sending packet as hex: [%s]", 
+                                     ", ".join([f"0x{b:02X}" for b in packet_bytes]))
+                    self.__ser.write(bytearray(packet_bytes))
                 except serial.SerialException:
                     self.stop()
 
